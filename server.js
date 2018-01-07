@@ -123,7 +123,10 @@ org.authenticate({username: SF_USER_NAME, password: SF_USER_PASSWORD}, err => {
         console.error(err);
     } else {
         console.log("Salesforce authentication successful");
+
+
         console.log(org.oauth.instance_url);
+        getRoomList();
         subscribeToPlatformEvents();
     }
 });
