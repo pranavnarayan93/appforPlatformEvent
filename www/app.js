@@ -1,74 +1,91 @@
 var content = document.getElementById('content');
-var mixes;
+var rooms;
 
-function renderMixList() {
+function renderOppList() {
     var html = '';
-    mixes.forEach(function(mix) {
-        html = html + '<div class="row">' + renderMix(mix) + '</div>';
+    rooms.forEach(function(room) {
+        html = html + '<div class="row">' + renderRoom(room) + '</div>';
     });
     content.innerHTML = html;
 }
 
-function renderMix(mix, isAnimated) {
+function renderRoom(room, isAnimated) {
     return `
-        <div class="col-sm-12">
+        <div class="col-sm-12" id="allDetails-${room.Id}">
             <div class="panel panel-primary ${isAnimated?"animateIn":""}">
-                <div class="panel-heading">Mix ID: ${mix.mixId}</div>
+                <div class="panel-heading">Room Name: ${room.Name}</div>
                 <div class="panel-body">
                     <div class="col-md-12 col-lg-7">
-                        <table>
+                        <table >
                             <tr>
-                                <td class="panel-table-label">Customer:</td><td>${mix.account}</td>
+                                <td class="panel-table-label">Floor:</td><td>${room.Floor__c}</td>
                             </tr>
                             <tr>
-                                <td class="panel-table-label">Mix Name:</td><td>${mix.mixName}</td>
+                                <td class="panel-table-label">Room Type:</td><td>${room.Room_Type__c}</td>
+                            </tr>
+                            <tr>
+                                <td class="panel-table-label">Max Allowed:</td><td>${room.Max_number_of_People_in_the_room__c}</td>
+                            </tr>
+                            <tr>
+                                <td class="panel-table-label">No staying:</td><td>${room.No_of_people_Staying__c}</td>
                             </tr>
                         </table>
                     </div>   
                     <div class="col-md-12 col-lg-5">
-                        <button class="btn btn-info" onclick="getMixDetails('${mix.mixId}')">
+                        <button class="btn btn-info" style="float: right" onclick="getRoomDetails('${room.Id}')">
                             <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>
                             View Details
                         </button>
-                        <button class="btn btn-info" onclick="approveMix('${mix.mixId}')">
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                            Approve
-                        </button>
                     </div>
-                    <div id="details-${mix.mixId}" class="col-md-12"></div>
+                    <div id="details-${room.Id}" class="col-md-12"></div>
                 </div>
             </div>
         </div>`;
 }
 
-// Render the merchandise list for a mix
-function renderMixDetails(mix, items) {
+// Render the merchandise list for a room
+function renderOppDetails(room, tenants,roomId) {
     var html = `
-        <table class="table">
+        <table class="table table table-bordered">
             <tr>
-                <th colspan="2">Product</th>
-                <th>MSRP</th>
-                <th>Qty</th>
+                <th >Name</th>
+                <th>Advance Given</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Proof Submitted</th>
+                <th>Rent</th>
+                <th>Still Staying</th>
+                <th>Vacate Room</th>
             </tr>`;
-    items.forEach(function(item) {
+    tenants.forEach(function(tenant) {
         html = html + `
             <tr>
-                <td><img src="${item.pictureURL}" style="height:50px"/></td>
-                <td>${item.productName}</td>
-                <td>$${item.price}</td>
-                <td>${item.qty}</td>
+                <td>${tenant.Name__c}</td>
+                <td>${tenant.Advance_Given__c}</td>
+                <td>${tenant.Age__c}</td>
+                <td style="word-break: break-all;">${tenant.Email__c}</td>
+                <td>${tenant.Phone_Number__c}</td>
+                <td><input type="checkbox" disabled="true" checked="${tenant.Proof_Submitted__c}"></td>
+                <td>${tenant.Rent__c}</td>
+                <td>${tenant.Still_Staying__c}</td>
+                <td>
+                    <button class="btn btn-info" onclick="vacateRoom('${tenant.Id}')">
+                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                            Vacate
+                </button></td>
             </tr>`
-    });
+        });
     html = html + "</table>"    
-    var details = document.getElementById('details-' + mix.mixId);
+    var details = document.getElementById('details-' + roomId);
     details.innerHTML = html;
 }
 
-function deleteMix(mixId) {
-    var index = mixes.length - 1;
+function deleteOpp(roomId) {
+    var index = rooms.length - 1;
     while (index >= 0) {
-        if (mixes[index].mixId === mixId) {
-            mixes.splice(index, 1);
+        if (rooms[index].roomId === roomId) {
+            rooms.splice(index, 1);
         }
         index -= 1;
     }
@@ -76,81 +93,92 @@ function deleteMix(mixId) {
 
 var socket = io.connect();
 
-socket.on('mix_submitted', function (newMix) {
-    // if the mix is alresdy in the list: do nothing
+socket.on('room_submitted', function (newroom) {
+    // if the room is alresdy in the list: do nothing
+    console.log('room submitted',newroom);
     var exists = false;
-    mixes.forEach((mix) => {
-        if (mix.mixId == newMix.mixId) {
+    rooms.forEach((room) => {
+        if (room.Id == newroom.Id) {
             exists = true;
+            console.log('exists');
+            room.Floor__c = newroom.Floor__c;
+            room.Max_number_of_People_in_the_room__c = newroom.Max_number_of_People_in_the_room__c;
+            room.No_of_people_Staying__c = newroom.No_of_people_Staying__c;
+            room.Room_Type__c = newroom.Room_Type__c;
+            var el = document.getElementById('allDetails-'+room.Id);
+            el.innerHTML = "";
+            el.innerHTML = renderRoom(newroom, true);
         }
     });
-    // if the mix is not in the list: add it
+    // if the room is not in the list: add it
     if (!exists) {
-        mixes.push(newMix);
-        var el = document.createElement("div");
+        rooms.push(newroom);
+        var el = document.getElementById("div");
         el.className = "row";
-        el.innerHTML = renderMix(newMix, true);
+        el.innerHTML = renderRoom(newroom, true);
         content.insertBefore(el, content.firstChild);
     }
 });
 
-socket.on('mix_unsubmitted', function (data) {
-    deleteMix(data.mixId);
-    renderMixList();
+socket.on('room_unsubmitted', function (data) {
+    deleteOpp(data.roomId);
+    renderOppList();
 });
 
-// Retrieve the existing list of mixes from Node server
-function getMixList() {
+// Retrieve the existing list of rooms from Node server
+function getRoomList() {
     var xhr = new XMLHttpRequest(),
         method = 'GET',
-        url = '/mixes';
+        url = '/rooms';
 
     xhr.open(method, url, true);
     xhr.onload = function () {
-        mixes = JSON.parse(xhr.responseText);
-        renderMixList();
+        rooms = JSON.parse(xhr.responseText);
+        renderOppList();
     };
     xhr.send();
 }
 
-// Retrieve the merchandise list for a mix from Node server
-function getMixDetails(mixId) {
-    var details = document.getElementById('details-' + mixId);
+// Retrieve the merchandise list for a room from Node server
+function getRoomDetails(roomId) {
+    console.log('roomId',roomId);
+    var details = document.getElementById('details-' + roomId);
     if (details.innerHTML != '') {
         details.innerHTML = '';
         return;
     }
-    var mix;
-    for (var i=0; i<mixes.length; i++) {
-        if (mixes[i].mixId = mixId) {
-            mix = mixes[i];
+    var room;
+    for (var i=0; i<rooms.length; i++) {
+        if (rooms[i].roomId = roomId) {
+            room = rooms[i];
             break;
         }
     };
     var xhr = new XMLHttpRequest(),
         method = 'GET',
-        url = '/mixes/' + mixId;
+        url = '/rooms/' + roomId;
 
     xhr.open(method, url, true);
     xhr.onload = function () {
         var items = JSON.parse(xhr.responseText);
-        renderMixDetails(mix, items);
+        renderOppDetails(room, items,roomId);
     };
     xhr.send();
 }
 
 // Post approve message to Node server
-function approveMix(mixId) {
+function vacateRoom(tenant) {
+    console.log(tenant);
     var xhr = new XMLHttpRequest(),
         method = 'POST',
-        url = '/approvals/' + mixId;
+        url = '/vacate/' + tenant;
 
     xhr.open(method, url, true);
     xhr.onload = function () {
-        deleteMix(mixId);
-        renderMixList();
+        console.log(xhr.response);
+        renderOppList();
     };
     xhr.send();
 }
 
-getMixList();
+getRoomList();
