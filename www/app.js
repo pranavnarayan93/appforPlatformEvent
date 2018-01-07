@@ -113,7 +113,7 @@ socket.on('room_submitted', function (newroom) {
     // if the room is not in the list: add it
     if (!exists) {
         rooms.push(newroom);
-        var el = document.getElementById("div");
+        var el = document.createElement("div");
         el.className = "row";
         el.innerHTML = renderRoom(newroom, true);
         content.insertBefore(el, content.firstChild);
