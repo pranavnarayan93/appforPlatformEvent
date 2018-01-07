@@ -7,7 +7,7 @@ let server = require('http').Server(app);
 let io = require('socket.io')(server);
 
 let getRooms = (req, res) => {
-    let q = "SELECT Id, Name, Floor__c,Room_Type__c,Max_number_of_People_in_the_room__c,No_of_people_Staying__c FROM Room__c";
+    let q = "SELECT Id, Name, Floor__c,Room_Type__c,Max_number_of_People_in_the_room__c,No_of_people_Staying__c FROM Room__c ORDER BY NAME";
     org.query({query: q}, (err, resp) => {
         if (err) {
             console.log(err);
