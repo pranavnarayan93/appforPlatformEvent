@@ -2,7 +2,7 @@
   "name": "platformeventappcheck",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "dependencies": {
     "cors": "^2.8.3",
     "express": "^4.15.3",
