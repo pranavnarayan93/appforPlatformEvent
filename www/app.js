@@ -181,3 +181,4 @@ function vacateRoom(tenant) {
     xhr.send();
 }
 
+getRoomList();
