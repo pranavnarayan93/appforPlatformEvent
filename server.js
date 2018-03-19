@@ -106,7 +106,7 @@ let SF_CLIENT_SECRET = '3326889229794377836';
 //let SF_USER_NAME = process.env.SF_USER_NAME;
 let SF_USER_NAME = 'pranav@narayan.com';
 //let SF_USER_PASSWORD = process.env.SF_USER_PASSWORD;
-let SF_USER_PASSWORD = 'Lister_1234Ssc8bvCHgYZwKM9a0Uk6bUBWO';
+let SF_USER_PASSWORD = 'Warp#1234UJ9DmQNKBlkBEFyRYyVX1pIg';
 
 let org = nforce.createConnection({
     clientId: SF_CLIENT_ID,
