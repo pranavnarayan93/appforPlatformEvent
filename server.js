@@ -99,14 +99,14 @@ bayeux.on('disconnect', function(clientId) {
 server.listen(PORT, () => console.log(`Express server listening on ${ PORT }`));
 
 // Connect to Salesforce
-//et SF_CLIENT_ID = process.env.SF_CLIENT_ID;
-let SF_CLIENT_ID = '3MVG9ZL0ppGP5UrB0maUIwCyBA2hRpAaABPW6Q_mZQBftz.iJF4w.AONW.XF3T_mlhvpl4SiYexTzkgFUTQf9';
-//let SF_CLIENT_SECRET = process.env.SF_CLIENT_SECRET;
-let SF_CLIENT_SECRET = '3326889229794377836';
-//let SF_USER_NAME = process.env.SF_USER_NAME;
-let SF_USER_NAME = 'pranav@narayan.com';
-//let SF_USER_PASSWORD = process.env.SF_USER_PASSWORD;
-let SF_USER_PASSWORD = 'Warp#1234UJ9DmQNKBlkBEFyRYyVX1pIg';
+let SF_CLIENT_ID = process.env.SF_CLIENT_ID;
+//let SF_CLIENT_ID = '3MVG9ZL0ppGP5UrB0maUIwCyBA2hRpAaABPW6Q_mZQBftz.iJF4w.AONW.XF3T_mlhvpl4SiYexTzkgFUTQf9';
+let SF_CLIENT_SECRET = process.env.SF_CLIENT_SECRET;
+//let SF_CLIENT_SECRET = '3326889229794377836';
+let SF_USER_NAME = process.env.SF_USER_NAME;
+//let SF_USER_NAME = 'pranav@narayan.com';
+let SF_USER_PASSWORD = process.env.SF_USER_PASSWORD;
+//let SF_USER_PASSWORD = 'Warp#1234UJ9DmQNKBlkBEFyRYyVX1pIg';
 
 let org = nforce.createConnection({
     clientId: SF_CLIENT_ID,
